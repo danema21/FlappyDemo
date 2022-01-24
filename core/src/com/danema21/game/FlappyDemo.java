@@ -23,6 +23,7 @@ public class FlappyDemo extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 		music.setVolume(0.1f);
+		music.setLooping(true);
 		music.play();
 		gsm.push(new MenuState(gsm));
 	}
