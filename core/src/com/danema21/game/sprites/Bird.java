@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Bird {
     public static final int GRAVITY = -15;
+    public static boolean DEAD = false;
     private static final int MOVEMENT = 100;
     private static final int MAX_ROTATION = -45;
 
@@ -46,7 +47,12 @@ public class Bird {
             }
             //position.scl(dt);
         }
-        position.add(MOVEMENT * dt, velocity.y, 0);
+
+        if(!DEAD) {
+            position.add(MOVEMENT * dt, velocity.y, 0);
+        }else{
+            position.add(0, velocity.y, 0);
+        }
         //velocity.scl(1/dt);
         if(position.y < 0){
             position.y = 0;

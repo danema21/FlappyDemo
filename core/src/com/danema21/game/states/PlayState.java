@@ -20,7 +20,6 @@ public class PlayState extends State{
     private Texture bg;
     private Texture ground;
     private Vector2 groundPos1, groundPos2;
-
     private Array<Tube> tubes;
 
     protected PlayState(GameStateManager gsm) {
@@ -40,28 +39,41 @@ public class PlayState extends State{
     @Override
     protected void handleInput() {
         if(Gdx.input.justTouched()){
-            bird.jump();
+            if(!bird.DEAD) {
+                bird.jump();
+            }else{
+                bird.DEAD = false;
+                gsm.set(new GameOverState(gsm));
+            }
         }
     }
 
     @Override
     public void update(float dt) {
-        handleInput();
-        updateGround();
-        bird.update(dt);
-        cam.position.x = bird.getPosition().x + 80;
-        for(Tube tube : tubes) {
-            if (cam.position.x - (cam.viewportWidth / 2) > tube.getPosTopTube().x + tube.getTopTube().getWidth()) {
-                tube.reposition(tube.getPosTopTube().x + ((Tube.TUBE_WIDTH + TUBE_SPACING) * TUBE_COUNT));
+        if(!bird.DEAD) {
+            handleInput();
+            updateGround();
+            bird.update(dt);
+            cam.position.x = bird.getPosition().x + 80;
+            for (Tube tube : tubes) {
+                if (cam.position.x - (cam.viewportWidth / 2) > tube.getPosTopTube().x + tube.getTopTube().getWidth()) {
+                    tube.reposition(tube.getPosTopTube().x + ((Tube.TUBE_WIDTH + TUBE_SPACING) * TUBE_COUNT));
+                }
+                if (tube.collides(bird.getBounds())) {
+                    bird.DEAD = true;
+                }
             }
-            if(tube.collides(bird.getBounds())){
-                gsm.set(new GameOverState(gsm));
+            if (bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET) {
+                bird.DEAD = true;
+            }
+            cam.update();
+        }else {
+            if(bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET){
+                handleInput();
+            }else{
+                bird.update(dt);
             }
         }
-        if(bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET){
-            gsm.set(new GameOverState(gsm));
-        }
-        cam.update();
     }
 
     @Override
